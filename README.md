@@ -9,6 +9,14 @@
 
 ---
 
+## ⚠️ Demo ve Giriş Hakkında Önemli Not
+
+🔴 **Canlı Demo Sınırlaması:** [Canlı Demo](https://ilkertgv.pythonanywhere.com) sitesindeki **"Google ile Giriş"** özelliği, güvenlik nedeniyle sadece yetkili yönetici hesaplarına (Proje Sahibine) açıktır. Kendi Gmail hesabınızla giriş yapmaya çalışırsanız yetki hatası alabilirsiniz.
+
+✅ **Sistemi Tam Yetkiyle İncelemek İçin:** Sistemi tüm admin özellikleriyle (Cihaz Ekleme/Silme, Ayarlar, Personel Yönetimi vb.) test etmek için **projeyi kendi bilgisayarınıza (Localhost) kurmanız gerekmektedir.** Kurulum adımları aşağıdadır.
+
+---
+
 ## 🔥 Temel Özellikler
 
 ### 📡 1. Gerçek Zamanlı İzleme
@@ -42,9 +50,9 @@
 
 ---
 
-## 🚀 Kurulum ve Çalıştırma
+## 🚀 Kurulum ve Çalıştırma (Tam Yetki İçin)
 
-Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin:
+Projeyi tam fonksiyonel kullanmak için local ortamda çalıştırın:
 
 ### 1. Repoyu Klonlayın
 ```bash
@@ -70,7 +78,7 @@ python app.py
 ```
 Tarayıcınızda `http://localhost:5000` adresine gidin.
 
-### 5. Kurulumu Tamamlayın (ÖNEMLİ)
+### 5. Kurulumu Tamamlayın
 Sistem ilk açıldığında sizi **Kurulum Sihirbazı** karşılayacaktır.
 1. **Google Client ID & Secret:** Google Cloud Console'dan aldığınız anahtarları girin.
 2. **Admin Hesabı:** Yönetici e-posta ve şifrenizi belirleyin.
@@ -81,6 +89,6 @@ Sistem ilk açıldığında sizi **Kurulum Sihirbazı** karşılayacaktır.
 ## 👤 İletişim & Geliştirici
 
 **Geliştirici:** [İlker Y.](https://github.com/ilkerys)  
-**Canlı Demo:** [https://ilkerys.pythonanywhere.com](https://ilkerys.pythonanywhere.com)
+**Canlı Demo:** [https://ilkertgv.pythonanywhere.com](https://ilkertgv.pythonanywhere.com)
 
 Bu proje açık kaynaklıdır ve eğitim amaçlı geliştirilmiştir. ⭐ Yıldız vermeyi unutmayın!
