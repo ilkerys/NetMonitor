@@ -1,3 +1,8 @@
+
+
+https://github.com/user-attachments/assets/341f88fb-19d1-45df-bd87-5d751b2e997e
+
+
 # 🌐 NetMonitor - Kurumsal Ağ & Sistem Takip Platformu
 
 [![Canlı Demo](https://img.shields.io/badge/Canlı_Site-Görüntüle-2ea44f?style=for-the-badge&logo=google-chrome&logoColor=white)](https://ilkertgv.pythonanywhere.com)
