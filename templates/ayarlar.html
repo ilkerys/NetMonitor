@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 700px;">
+    
+    <div class="d-flex align-items-center mb-4 reveal-up">
+        <a href="/dashboard" class="btn btn-light btn-icon-circle me-3 shadow-sm">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div>
+            <h4 class="fw-bold mb-0">Sistem Ayarları</h4>
+            <p class="text-muted mb-0 small">Sistemin tüm yapılandırmasını buradan yönet.</p>
+        </div>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} text-center py-2 mb-3 rounded-3 fw-bold">
+              <i class="fas fa-check-circle me-2"></i>{{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="card border-0 shadow-lg rounded-4 reveal-up">
+        <div class="card-body p-5">
+            
+            <form method="POST">
+                
+                <h6 class="fw-bold text-primary mb-3"><i class="fab fa-telegram me-2"></i>Telegram Bildirimleri</h6>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">Bot Token</label>
+                    <input type="text" name="telegram_token" class="form-control form-control-oval" 
+                           value="{{ current_user.telegram_token if current_user.telegram_token else '' }}">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted">Chat ID</label>
+                    <input type="text" name="telegram_chat_id" class="form-control form-control-oval" 
+                           value="{{ current_user.telegram_chat_id if current_user.telegram_chat_id else '' }}">
+                </div>
+
+                <hr class="my-4">
+
+                <h6 class="fw-bold text-success mb-3"><i class="fab fa-google me-2"></i>Google API Ayarları</h6>
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">Client ID</label>
+                    <input type="text" name="google_client_id" class="form-control form-control-oval" 
+                           value="{{ config.google_client_id }}">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted">Client Secret</label>
+                    <input type="password" name="google_client_secret" class="form-control form-control-oval" 
+                           value="{{ config.google_client_secret }}">
+                </div>
+
+                <hr class="my-4">
+
+                <h6 class="fw-bold text-danger mb-3"><i class="fas fa-user-shield me-2"></i>Panel Giriş Bilgileri</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small text-muted">Kullanıcı Adı</label>
+                        <input type="text" name="panel_user" class="form-control form-control-oval" 
+                               value="{{ config.panel_user }}">
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-bold small text-muted">Şifre</label>
+                        <input type="text" name="panel_pass" class="form-control form-control-oval" 
+                               value="{{ config.panel_pass }}">
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-oval py-3 shadow-sm fw-bold">
+                        <i class="fas fa-save me-2"></i>Tüm Ayarları Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

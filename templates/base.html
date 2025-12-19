@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NetMonitor</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* --- GENEL STİL --- */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding-top: 80px;
+        }
+
+        /* --- HEADER --- */
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #000;
+            letter-spacing: -0.5px;
+        }
+        
+        /* Kullanıcı İkonu */
+        .header-icon {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333 !important;
+            border: 2px solid #e9ecef;
+            overflow: hidden; /* Resim taşmasın */
+        }
+        .header-icon:hover {
+            transform: scale(1.05);
+            border-color: #333;
+            box-shadow: 0 4px 12px rgba(51, 51, 51, 0.2);
+        }
+
+        /* --- HAMBURGER MENÜ (OFFCANVAS) --- */
+        .offcanvas { border-top-right-radius: 1.5rem; border-bottom-right-radius: 1.5rem; }
+        .nav-link { font-weight: 500; color: #333; transition: all 0.2s; border-radius: 10px; margin-bottom: 5px; }
+        .nav-link:hover { background-color: #f8f9fa; color: #000; transform: translateX(5px); }
+
+        /* --- DİNAMİK ADA BUTONLAR --- */
+        .btn-oval {
+            border-radius: 50rem !important;
+            padding-left: 1.5rem; padding-right: 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-oval:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        
+        .form-control-oval {
+            border-radius: 1.5rem !important;
+            padding: 0.75rem 1.25rem;
+            border: 1px solid #ced4da;
+        }
+        .form-control-oval:focus { border-color: #343a40; box-shadow: 0 0 0 0.25rem rgba(52, 58, 64, 0.15); }
+    </style>
+</head>
+
+<body class="bg-white" style="height: 100%;">
+
+    <header class="fixed-top bg-white border-bottom shadow-sm" style="height: 80px; display: flex; align-items: center;">
+        <nav class="navbar navbar-light w-100">
+            <div class="container">
+                
+                <div class="d-flex align-items-center">
+                    <button class="navbar-toggler border-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <a class="navbar-brand" href="/">
+                        <i class="fas fa-network-wired text-primary me-2"></i>NetMonitor
+                    </a>
+                </div>
+
+                <div class="dropdown">
+                    {% if current_user.is_authenticated %}
+                        <a class="header-icon" href="#" role="button" data-bs-toggle="dropdown">
+                            {% if current_user.picture %}
+                                <img src="{{ current_user.picture }}" alt="Profil" style="width:100%; height:100%; object-fit: cover;">
+                            {% else %}
+                                <i class="fas fa-user"></i>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4">
+                            <li class="px-3 py-2 small text-muted fw-bold text-center">
+                                {{ current_user.name }}
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap</a></li>
+                        </ul>
+                    {% else %}
+                        <a href="/login/google" class="btn btn-outline-dark btn-oval btn-sm shadow-sm">
+                            <i class="fab fa-google me-2"></i>Giriş
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNav">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold">
+                <i class="fas fa-network-wired text-primary me-2"></i>Menü
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-4 d-flex flex-column justify-content-between">
+            
+            <ul class="navbar-nav fs-5">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="fas fa-home me-3 text-muted"></i>Ana Sayfa</a>
+                </li>
+                
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard"><i class="fas fa-tachometer-alt me-3 text-muted"></i>Admin Paneli</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/talepler"><i class="fas fa-ticket-alt me-3 text-muted"></i>Destek Talepleri</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/destek" target="_blank"><i class="fas fa-plus-circle me-3 text-muted"></i>Yeni Talep Oluştur</a>
+                </li>
+                {% endif %}
+                
+            </ul>
+
+            <div class="border-top pt-3">
+                {% if current_user.is_authenticated %}
+                    <a href="/logout" class="nav-link text-danger"><i class="fas fa-sign-out-alt me-3"></i>Çıkış Yap</a>
+                {% else %}
+                    <a href="/login/google" class="nav-link text-primary"><i class="fab fa-google me-3"></i>Giriş Yap</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <main class="py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white text-center py-4 border-top mt-5">
+        <p class="mb-0 text-muted fw-bold small">&copy; 2025 NetMonitor. Tüm hakları saklıdır.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script>
+        ScrollReveal().reveal('.reveal-up', { distance: '30px', origin: 'bottom', duration: 800, interval: 100 });
+    </script>
+
+</body>
+</html>

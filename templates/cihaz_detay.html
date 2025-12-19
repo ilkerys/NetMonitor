@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <div class="d-flex align-items-center mb-4 reveal-up">
+        <a href="/dashboard" class="btn btn-light btn-icon-circle me-3 shadow-sm">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div>
+            <h4 class="fw-bold mb-0">{{ cihaz.isim }}</h4>
+            <p class="text-muted mb-0 small">
+                {{ cihaz.takip_tipi }} İzleme 
+                {% if cihaz.port %}(Port: {{ cihaz.port }}){% endif %}
+            </p>
+        </div>
+        <div class="ms-auto">
+            {% if 'ONLINE' in cihaz.durum %}
+                <span class="badge bg-success rounded-pill px-4 py-2 shadow-sm">ONLINE</span>
+            {% else %}
+                <span class="badge bg-danger rounded-pill px-4 py-2 shadow-sm">OFFLINE</span>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if cihaz.ssl_bitis %}
+    <div class="alert alert-warning border-0 shadow-sm rounded-4 d-flex align-items-center mb-4 reveal-up">
+        <i class="fas fa-lock fa-2x me-3 text-warning"></i>
+        <div>
+            <h6 class="fw-bold mb-0">SSL Sertifikası</h6>
+            <small>Bitiş Tarihi: <strong>{{ cihaz.ssl_bitis.strftime('%d.%m.%Y') }}</strong></small>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row g-4 reveal-up">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-lg rounded-4 mb-4">
+                <div class="card-body p-4 text-center">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-server fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ cihaz.ip }}</h5>
+                    <hr class="opacity-10">
+                    <div class="text-start">
+                        <div class="mb-2"><label class="small fw-bold text-muted">MODEL:</label> {{ cihaz.marka_model }}</div>
+                        <div class="mb-2"><label class="small fw-bold text-muted">KONUM:</label> {{ cihaz.konum }}</div>
+                        <div class="mb-2"><label class="small fw-bold text-muted">SORUMLU:</label> {{ cihaz.sorumlu }}</div>
+                    </div>
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-outline-dark btn-oval" data-bs-toggle="modal" data-bs-target="#editDeviceModal">Düzenle</button>
+                        <a href="/sil/{{ cihaz.id }}" class="btn btn-outline-danger btn-oval" onclick="return confirm('Sil?')">Sil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Hızlı İşlemler</h5>
+                    <div class="d-flex gap-3">
+                        <a href="/cihaz/tara/{{ cihaz.id }}" class="btn btn-light border py-3 px-4 rounded-4 flex-grow-1 text-start text-decoration-none">
+                            <i class="fas fa-sync fa-lg text-primary mb-2 d-block"></i>
+                            <span class="fw-bold small text-dark">Yeniden Tara</span>
+                        </a>
+                        <a href="#loglar" class="btn btn-light border py-3 px-4 rounded-4 flex-grow-1 text-start text-decoration-none">
+                            <i class="fas fa-history fa-lg text-secondary mb-2 d-block"></i>
+                            <span class="fw-bold small text-dark">Log Kayıtları</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-chart-line text-success me-2"></i>24 Saatlik Performans</h5>
+                    <div style="height: 250px;">
+                        <canvas id="uptimeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4" id="loglar">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Son Kayıtlar</h5>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        {% for log in loglar %}
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span class="small">{{ log.mesaj }}</span>
+                            <span class="small text-muted">{{ log.tarih.strftime('%H:%M') }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editDeviceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 ps-4 pt-4">
+                <h5 class="modal-title fw-bold">Düzenle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/cihaz/duzenle/{{ cihaz.id }}" method="POST">
+                <div class="modal-body p-4">
+                    <input type="text" name="isim" value="{{ cihaz.isim }}" class="form-control mb-3" placeholder="Ad">
+                    <input type="text" name="ip" value="{{ cihaz.ip }}" class="form-control mb-3" placeholder="IP">
+                    <input type="text" name="port" value="{{ cihaz.port or '' }}" class="form-control mb-3" placeholder="Port (Opsiyonel)">
+                    <select name="takip_tipi" class="form-control mb-3">
+                        <option value="Ping" {% if cihaz.takip_tipi == 'Ping' %}selected{% endif %}>Ping</option>
+                        <option value="Port" {% if cihaz.takip_tipi == 'Port' %}selected{% endif %}>Port</option>
+                        <option value="Web" {% if cihaz.takip_tipi == 'Web' %}selected{% endif %}>Web (SSL)</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary w-100">Güncelle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    fetch('/api/chart/{{ cihaz.id }}')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('uptimeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(row => row.x),
+                    datasets: [{
+                        label: 'Durum (1=Online)',
+                        data: data.map(row => row.y),
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { display: false } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        });
+</script>
+{% endblock %}

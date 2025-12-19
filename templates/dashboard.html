@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 reveal-up">
+        
+        <div>
+            <h4 class="fw-bold mb-0 text-dark">Sistem Durumu</h4>
+            <p class="text-muted mb-0 small">{{ cihazlar|length }} cihaz aktif izleniyor</p>
+        </div>
+        
+        <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+            
+            <div class="d-flex gap-2 flex-grow-1 flex-md-grow-0">
+                <a href="/admin/personel" class="btn btn-info btn-oval text-white shadow-sm flex-fill flex-md-grow-0" title="Personel"><i class="fas fa-users"></i></a>
+                <a href="/ayarlar" class="btn btn-dark btn-oval shadow-sm flex-fill flex-md-grow-0" title="Ayarlar"><i class="fas fa-cog"></i></a>
+            </div>
+
+            <a href="/tara" class="btn btn-warning btn-oval text-white shadow-sm flex-fill flex-md-grow-0"><i class="fas fa-sync-alt me-2"></i>Tara</a>
+            <button type="button" class="btn btn-success btn-oval shadow-sm flex-fill flex-md-grow-0" data-bs-toggle="modal" data-bs-target="#importModal"><i class="fas fa-file-csv me-2"></i>İçe Aktar</button>
+            <button type="button" class="btn btn-primary btn-oval shadow-sm flex-fill flex-md-grow-0" data-bs-toggle="modal" data-bs-target="#addDeviceModal"><i class="fas fa-plus me-2"></i>Yeni Ekle</button>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} text-center py-2 mb-4 rounded-4 fw-bold shadow-sm">
+              <i class="fas fa-info-circle me-2"></i>{{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="row g-3 mb-4 reveal-up">
+        {% set online_count = [] %}
+        {% set offline_count = [] %}
+        {% for c in cihazlar %}
+            {% if 'ONLINE' in c.durum %} {% set _ = online_count.append(1) %} {% else %} {% set _ = offline_count.append(1) %} {% endif %}
+        {% endfor %}
+
+        <div class="col-6 col-md-4">
+            <div class="p-3 bg-white rounded-4 shadow-sm border h-100 d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-0 fw-bold">{{ cihazlar|length }}</h3>
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Toplam</small>
+                </div>
+                <i class="fas fa-server fa-2x text-muted opacity-25"></i>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="p-3 bg-white rounded-4 shadow-sm border h-100 d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-0 fw-bold text-success">{{ online_count|length }}</h3>
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Online</small>
+                </div>
+                <i class="fas fa-check-circle fa-2x text-success opacity-50"></i>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="p-3 bg-white rounded-4 shadow-sm border h-100 d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-0 fw-bold text-danger">{{ offline_count|length }}</h3>
+                    <small class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">Offline</small>
+                </div>
+                <i class="fas fa-times-circle fa-2x text-danger opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4 reveal-up overflow-hidden">
+        <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold m-0 text-primary"><i class="fas fa-ticket-alt me-2"></i>Destek Talepleri</h6>
+            <a href="/admin/talepler" class="small text-decoration-none fw-bold">Tümü</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="min-width: 600px;"> 
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-2 small text-secondary">Konu</th>
+                        <th class="py-2 small text-secondary">Gönderen</th>
+                        <th class="py-2 small text-secondary">Durum</th>
+                        <th class="py-2 small text-secondary text-end pe-4">Tarih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for talep in son_talepler %}
+                    <tr style="cursor: pointer;" onclick="window.location='/destek/{{ talep.id }}'">
+                        <td class="ps-4 fw-bold text-dark text-truncate" style="max-width: 200px;">{{ talep.konu }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ talep.gonderen_isim }}</span></td>
+                        <td>
+                            {% if talep.durum == 'Açık' %} <span class="badge bg-success">AÇIK</span>
+                            {% else %} <span class="badge bg-secondary">KAPALI</span> {% endif %}
+                        </td>
+                        <td class="text-end pe-4 text-muted small">{{ talep.tarih.strftime('%d.%m %H:%M') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center py-3 text-muted">Henüz talep yok.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if cihazlar and cihazlar|length > 0 %}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden reveal-up">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="min-width: 800px;"> 
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3 text-secondary small" style="width: 50px;">Durum</th>
+                        <th class="py-3 text-secondary small">Cihaz Adı</th>
+                        <th class="py-3 text-secondary small">IP / Hedef</th>
+                        <th class="py-3 text-secondary small">Tip</th>
+                        <th class="py-3 text-secondary small">Son Kontrol</th>
+                        <th class="pe-4 py-3 text-secondary small text-end">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cihaz in cihazlar %}
+                    <tr>
+                        <td class="ps-4">
+                            {% if 'ONLINE' in cihaz.durum %}
+                                <i class="fas fa-circle text-success pulse-animation" title="Online"></i>
+                            {% else %}
+                                <i class="fas fa-circle text-danger" title="Offline"></i>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold">
+                            <a href="/cihaz/{{ cihaz.id }}" class="text-decoration-none text-dark d-block">
+                                {{ cihaz.isim }}
+                            </a>
+                        </td>
+                        <td><code class="text-primary bg-light px-2 py-1 rounded small">{{ cihaz.ip }}</code></td>
+                        <td>
+                            {% if cihaz.takip_tipi == 'Ping' %} <span class="badge bg-secondary small">PING</span>
+                            {% elif cihaz.takip_tipi == 'Port' %} <span class="badge bg-info text-dark small">PORT: {{ cihaz.port }}</span>
+                            {% elif cihaz.takip_tipi == 'Web' %} <span class="badge bg-warning text-dark small">WEB SSL</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ cihaz.son_kontrol.strftime('%H:%M:%S') }}</td>
+                        <td class="pe-4 text-end">
+                            <a href="/sil/{{ cihaz.id }}" class="btn btn-light btn-sm rounded-circle border hover-danger" onclick="return confirm('Silmek istediğine emin misin?')">
+                                <i class="fas fa-trash text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5 bg-white rounded-4 shadow-sm border reveal-up">
+        <i class="fas fa-network-wired fa-3x text-muted mb-3 opacity-25"></i>
+        <h5 class="fw-bold text-muted">Takip edilen cihaz yok</h5>
+        <button class="btn btn-primary btn-sm mt-2 rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addDeviceModal">Hemen Ekle</button>
+    </div>
+    {% endif %}
+
+</div>
+
+<div class="modal fade" id="addDeviceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 1.5rem;">
+            <div class="modal-header border-0 ps-4 pt-4">
+                <h5 class="modal-title fw-bold">Yeni Cihaz Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/ekle" method="POST">
+                <div class="modal-body p-4">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="fw-bold small text-muted ms-2 mb-1">Cihaz Adı</label>
+                            <input type="text" name="isim" class="form-control form-control-oval" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold small text-muted ms-2 mb-1">IP / Domain</label>
+                            <input type="text" name="ip" class="form-control form-control-oval" placeholder="google.com" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="fw-bold small text-muted ms-2 mb-1">Takip Yöntemi</label>
+                            <select name="takip_tipi" class="form-control form-control-oval" id="takipSelect" onchange="togglePortInput()">
+                                <option value="Ping">Ping</option>
+                                <option value="Port">Port</option>
+                                <option value="Web">Web (SSL)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="portDiv" style="display:none;">
+                            <label class="fw-bold small text-muted ms-2 mb-1">Port No</label>
+                            <input type="number" name="port" class="form-control form-control-oval" placeholder="80">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="fw-bold small text-muted ms-2 mb-1">Cihaz Tipi</label>
+                        <select name="tip" class="form-control form-control-oval">
+                            <option value="PC">Bilgisayar</option>
+                            <option value="Sunucu">Sunucu</option>
+                            <option value="Web">Web Sitesi</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="fw-bold small text-muted ms-2 mb-1">Konum</label>
+                            <input type="text" name="konum" class="form-control form-control-oval" placeholder="Ofis">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold small text-muted ms-2 mb-1">Sorumlu</label>
+                            <input type="text" name="sorumlu" class="form-control form-control-oval" placeholder="Yönetici">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer border-0 pe-4 pb-4">
+                    <button type="button" class="btn btn-light btn-oval px-4" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary btn-oval px-4">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 1.5rem;">
+            <div class="modal-header border-0 ps-4 pt-4">
+                <h5 class="modal-title fw-bold">Toplu Yükle (CSV)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/import/csv" method="POST" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    <input type="file" name="file" class="form-control form-control-oval" required accept=".csv">
+                </div>
+                <div class="modal-footer border-0 pe-4 pb-4">
+                    <button type="submit" class="btn btn-success btn-oval px-4">Yükle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePortInput() {
+    var select = document.getElementById("takipSelect");
+    var portDiv = document.getElementById("portDiv");
+    if (select.value === "Port") {
+        portDiv.style.display = "block";
+    } else {
+        portDiv.style.display = "none";
+    }
+}
+</script>
+
+<style>
+    /* Online olanlar için yanıp sönme efekti */
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4); }
+        70% { box-shadow: 0 0 0 5px rgba(25, 135, 84, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(25, 135, 84, 0); }
+    }
+    .pulse-animation {
+        border-radius: 50%;
+        animation: pulse-green 2s infinite;
+    }
+    
+    .hover-danger:hover i { color: #dc3545 !important; }
+    .hover-danger:hover { border-color: #dc3545 !important; background: #fff5f5 !important; }
+</style>
+{% endblock %}

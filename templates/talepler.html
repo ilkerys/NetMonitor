@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 reveal-up">
+        <div>
+            <h4 class="fw-bold mb-0 text-dark">{{ baslik }}</h4>
+            <p class="text-muted mb-0 small">Destek taleplerini buradan yönet.</p>
+        </div>
+        
+        <a href="/destek/yeni" class="btn btn-primary btn-oval shadow-sm btn-responsive">
+            <i class="fas fa-plus me-2"></i>Yeni Talep Oluştur
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden reveal-up">
+        {% if talepler and talepler|length > 0 %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="min-width: 700px;">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3 text-secondary small" style="width: 80px;">ID</th>
+                            <th class="py-3 text-secondary small">Konu</th>
+                            <th class="py-3 text-secondary small">Gönderen</th>
+                            <th class="py-3 text-secondary small">Durum</th>
+                            <th class="py-3 text-secondary small text-end pe-4">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for talep in talepler %}
+                        <tr class="position-relative" style="cursor: pointer;" onclick="window.location='/destek/{{ talep.id }}'">
+                            <td class="ps-4 fw-bold text-primary">#{{ talep.id }}</td>
+                            <td>
+                                <a href="/destek/{{ talep.id }}" class="text-decoration-none text-dark fw-bold stretched-link">
+                                    {{ talep.konu }}
+                                </a>
+                                <small class="d-block text-muted" style="font-size: 0.75rem;">
+                                    <i class="far fa-clock me-1"></i>{{ talep.tarih.strftime('%d.%m.%Y %H:%M') }}
+                                </small>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-light text-dark border rounded-circle d-flex align-items-center justify-content-center fw-bold text-uppercase" 
+                                         style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                        {{ talep.gonderen_isim[:1] }}
+                                    </div>
+                                    <span class="small fw-semibold">{{ talep.gonderen_isim }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if talep.durum == 'Açık' %}
+                                    <span class="badge bg-success rounded-pill px-3">AÇIK</span>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill px-3">KAPALI</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <i class="fas fa-chevron-right text-muted opacity-50"></i>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-inbox fa-2x text-muted opacity-50"></i>
+                </div>
+                <h5 class="fw-bold text-muted">Henüz talep yok</h5>
+                <p class="text-muted small mb-4">Yeni bir destek talebi oluşturarak başlayabilirsin.</p>
+                <a href="/destek/yeni" class="btn btn-outline-primary btn-sm rounded-pill px-4">Talep Oluştur</a>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<style>
+    /* Mobilde Tam Genişlik */
+    .btn-responsive {
+        width: 100%;
+    }
+
+    /* PC ve Tablette (768px üstü) Otomatik Genişlik */
+    @media (min-width: 768px) {
+        .btn-responsive {
+            width: auto;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero-section d-flex align-items-center position-relative overflow-hidden">
+    
+    <div class="position-absolute top-0 start-0 w-100 h-100 overlay-gradient"></div>
+    <div class="position-absolute bottom-0 start-0 w-100 bottom-fade"></div>
+
+    <div class="container position-relative z-1">
+        <div class="row align-items-center">
+            <div class="col-lg-7 slide-in-content text-center text-lg-start">
+                
+                <h1 class="display-4 fw-bolder mb-3 text-dark hero-title">
+                    BT Altyapınızın<br>
+                    <span class="text-primary">Kontrolü Sizde Olsun.</span>
+                </h1>
+                
+                <p class="lead mb-4 text-secondary fw-medium mx-auto mx-lg-0 hero-desc">
+                    Tüm sunucu, ağ cihazları ve web sitelerinizi tek bir merkezden izleyin. 
+                    Kesintisiz ve güvenli altyapı yönetimi.
+                </p>
+                
+                <div class="d-flex flex-column flex-sm-row gap-3 pt-2 justify-content-center justify-content-lg-start">
+                    {% if current_user.is_authenticated %}
+                        <a href="/dashboard" class="btn btn-primary btn-oval px-4 py-3 shadow-lg fw-bold btn-hover-effect">
+                            <i class="fas fa-tachometer-alt me-2"></i>Yönetim Paneli
+                        </a>
+                    {% else %}
+                        <a href="/login/google" class="btn btn-primary btn-oval px-4 py-3 shadow-lg fw-bold btn-hover-effect">
+                            <i class="fab fa-google me-2"></i>Google ile Başla
+                        </a>
+    
+                        <a href="/login/demo" class="btn btn-dark btn-oval px-4 py-3 shadow-lg fw-bold btn-hover-effect">
+                            <i class="fas fa-user-secret me-2"></i>Demo Modu
+                        </a>
+                    {% endif %}
+
+                    <a href="/destek" class="btn btn-white btn-oval px-4 py-3 shadow fw-bold text-primary border btn-hover-effect bg-white">
+                        <i class="fas fa-headset me-2"></i>Destek
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="bg-white py-5 position-relative" style="z-index: 2;">
+    <div class="container py-4">
+        <div class="text-center mb-5 reveal-up">
+            <h2 class="fw-bold display-6">Neler Yapıyoruz?</h2>
+            <p class="text-muted">NetMonitor ile sistem yönetimini kolaylaştırın.</p>
+        </div>
+
+        <div class="row g-4 reveal-up">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-card p-4 text-center">
+                    <div class="icon-box bg-success bg-opacity-10 text-success mb-4 mx-auto rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="fas fa-heartbeat fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold">7/24 İzleme</h4>
+                    <p class="text-muted mt-3 small">Cihazlarınızı anlık takip eder, kesinti durumunda anında tespit ederiz.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-card p-4 text-center">
+                    <div class="icon-box bg-warning bg-opacity-10 text-warning mb-4 mx-auto rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="fas fa-bell fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold">Telegram Bildirim</h4>
+                    <p class="text-muted mt-3 small">Sorun olduğunda Telegram'dan cebinize anında bildirim gelir.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 hover-card p-4 text-center">
+                    <div class="icon-box bg-primary bg-opacity-10 text-primary mb-4 mx-auto rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="fas fa-ticket-alt fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold">Destek Masası</h4>
+                    <p class="text-muted mt-3 small">Kullanıcı taleplerini kayıt altına alın ve yönetin.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Masaüstü ve Genel Ayarlar */
+    .hero-section {
+        background-image: url('/static/img/hero-bg.jpg');
+        min-height: 100vh; /* Tam ekran */
+        background-size: cover;
+        background-position: center right;
+        background-repeat: no-repeat;
+    }
+
+    .overlay-gradient {
+        background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.9) 40%, rgba(255,255,255,0) 100%);
+    }
+
+    .bottom-fade {
+        height: 150px; 
+        background: linear-gradient(to top, #ffffff 0%, transparent 100%);
+    }
+
+    .icon-box { width: 80px; height: 80px; }
+    
+    .hover-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+    
+    .btn-hover-effect { transition: transform 0.2s; }
+    .btn-hover-effect:hover { transform: translateY(-2px); }
+
+    .slide-in-content { animation: slideInLeft 1s ease-out forwards; opacity: 0; }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* MOBİL İÇİN DÜZELTMELER (En Önemli Kısım) */
+    @media (max-width: 991px) {
+        .hero-section {
+            background-position: center center !important;
+            min-height: 100dvh; /* Mobilde oynama yapmasın diye dvh */
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .overlay-gradient {
+            background: rgba(255,255,255,0.92) !important; /* Mobilde resmi biraz daha silik yap */
+        }
+
+        .hero-title { font-size: 2.5rem; }
+        .hero-desc { font-size: 1rem; max-width: 100%; }
+
+        /* Butonları mobilde tam boy yapma, kibar kalsın */
+        .btn { width: 100%; max-width: 300px; margin: 0 auto; }
+        
+        .slide-in-content { animation: none; opacity: 1; }
+    }
+</style>
+{% endblock %}

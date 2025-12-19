@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 450px;">
+    
+    <div class="text-center mb-4 reveal-up">
+        <div class="bg-dark text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow" style="width: 70px; height: 70px;">
+            <i class="fas fa-user-shield fa-2x"></i>
+        </div>
+        <h4 class="fw-bold">Yönetici Girişi</h4>
+        <p class="text-muted small">Yönetim paneline erişmek için güvenlik şifresini girin.</p>
+    </div>
+
+    <div class="card border-0 shadow-lg rounded-4 reveal-up">
+        <div class="card-body p-4">
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} text-center py-2 mb-3 rounded-3 small fw-bold">
+                      <i class="fas fa-info-circle me-2"></i>{{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            {% if hata %}
+            <div class="alert alert-danger text-center py-2 mb-3 rounded-3 small fw-bold">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ hata }}
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted ms-2">Kullanıcı Adı</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 rounded-start-4 ps-3"><i class="fas fa-user text-secondary"></i></span>
+                        <input type="text" name="username" class="form-control form-control-oval border-start-0" placeholder="admin" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted ms-2">Şifre</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 rounded-start-4 ps-3"><i class="fas fa-lock text-secondary"></i></span>
+                        <input type="password" name="password" class="form-control form-control-oval border-start-0" placeholder="••••••" required>
+                    </div>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-dark btn-oval py-3 shadow fw-bold">
+                        <i class="fas fa-sign-in-alt me-2"></i>Panele Gir
+                    </button>
+                    <div class="text-center mt-3">
+                        <a href="/admin/forgot" class="small text-danger fw-bold text-decoration-none">
+                            <i class="fab fa-telegram-plane me-1"></i> Şifremi Unuttum (Telegram'a Gönder)
+                        </a>
+                    </div>
+                    <a href="/" class="btn btn-link text-muted small mt-1">Vazgeç ve Geri Dön</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
